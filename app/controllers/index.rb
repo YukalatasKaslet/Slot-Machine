@@ -14,13 +14,31 @@ post '/rolls' do
 
   @rolls = []
 
-  if params[:value]
-    3.times { @rolls << Roll.create({ value: value }) }
+  if request.xhr?
+    if params[:value]
+      3.times { @rolls << Roll.create({ value: value }) }
+
+    else
+      3.times { @rolls << Roll.create }
+
+    end
+  
+    @win = "WINNER!!" if @rolls.map! { |roll| roll.value }.uniq.count == 1    
+
+
   else
-    3.times { @rolls << Roll.create }
+
+    if params[:value]
+      3.times { @rolls << Roll.create({ value: value }) }
+
+    else
+      3.times { @rolls << Roll.create }
+
+    end
+  
+    @win = "WINNER!!" if @rolls.map! { |roll| roll.value }.uniq.count == 1
+    #redirect to('/?index="WINNER!!!"')
+    erb :index  # TIP: Qué esté haciendo esto y qué debe hacer diferente.
   end
 
-  @win = "WINNER!!" if @rolls.map! { |roll| roll.value }.uniq.count == 1
-
-  erb :index  # TIP: Qué esté haciendo esto y qué debe hacer diferente.
 end
